@@ -1,0 +1,6 @@
+[submodule "classbench-packet-classification"]
+	path = classbench-packet-classification
+	url = https://github.com/JiaChangGit/classbench-packet-classification.git
+[submodule "network-packet-classification"]
+	path = network-packet-classification
+	url = https://github.com/JiaChangGit/network-packet-classification.git
