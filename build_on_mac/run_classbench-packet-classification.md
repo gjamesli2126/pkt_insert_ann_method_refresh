@@ -23,7 +23,7 @@ wc -l build_on_mac/data/acl1_1000.txt
 The arguments select address scaling (`-b`), a custom seed (`-c`), a target of
 1,000 rules, smoothness `2`, address scope `0.5`, application/port scope `-0.1`,
 and the output filename. Redundant rules are removed, so the actual rule count
-can be lower than requested. The smoke run produced 953 rules.
+can be lower than requested. The C++26 smoke run produced 961 rules.
 
 Other included seeds are `acl2_seed` through `acl5_seed`, `fw1_seed` through
 `fw5_seed`, and `ipc1_seed`/`ipc2_seed`. To try a larger set, change the count
@@ -48,7 +48,7 @@ wc -l build_on_mac/data/acl1_1000.txt \
 
 The arguments are Pareto parameters `a=1`, `b=0` (no burst locality), trace scale
 `10`, and the input ruleset. The tool appends `_trace` to that input path. With
-these parameters, the tested 953-rule set produced 9,530 packet rows. Positive
+these parameters, the tested 961-rule set produced 9,610 packet rows. Positive
 `b` values introduce bursts, which can overshoot the requested trace threshold.
 
 This checkout produces seven tab-separated fields per packet: source address,

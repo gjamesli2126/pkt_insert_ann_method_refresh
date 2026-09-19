@@ -50,7 +50,7 @@ cat ../../logs/run_generated.log
 ls -lh ../../INFO
 ```
 
-The generated-data smoke run loaded **953 rules and 9,530 packets** and exited
+The C++26 generated-data smoke run loaded **961 rules and 9,610 packets** and exited
 successfully. Your generated rule count can vary. Check the printed counts
 against `wc -l` for your input files.
 
