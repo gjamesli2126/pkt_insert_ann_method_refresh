@@ -27,20 +27,24 @@ DB_SOURCES := $(wildcard $(CLASSBENCH)/db_generator/*.cc)
 TRACE_SOURCES := $(wildcard $(CLASSBENCH)/trace_generator/*.cc)
 NETWORK_SOURCES := $(addprefix $(NETWORK)/,main.cpp io/input.cpp \
     io/inputFile_test.cpp lib/equivalentPri.cpp lib/checkCovered_one.cpp \
-    lib/hyperrectangleCoverChecker.cpp)
+    lib/hyperrectangleCoverChecker.cpp lib/multiProbeGrid.cpp)
 
 DB_OBJECTS := $(patsubst $(CLASSBENCH)/db_generator/%.cc,build/classbench/obj/db_generator/%.o,$(DB_SOURCES))
 TRACE_OBJECTS := $(patsubst $(CLASSBENCH)/trace_generator/%.cc,build/classbench/obj/trace_generator/%.o,$(TRACE_SOURCES))
 NETWORK_OBJECTS := $(patsubst $(NETWORK)/%.cpp,build/network/obj/%.o,$(NETWORK_SOURCES))
 OBJECTS := $(DB_OBJECTS) $(TRACE_OBJECTS) $(NETWORK_OBJECTS)
 
-.PHONY: all classbench network check-submodules check-openmp clean clean-data clean-all help
+.PHONY: all classbench network test check-submodules check-openmp clean clean-data clean-all help
 
 all: classbench network
 
 classbench: build/classbench/db_generator build/classbench/trace_generator
 
 network: build/network/m
+
+# MultiProbeGrid 的隨機壓力測試，不需要 OpenMP，也不需要規則集檔案。
+test: build/network/testMultiProbeGrid
+	./build/network/testMultiProbeGrid
 
 check-submodules:
 	@test -f "$(CLASSBENCH)/db_generator/db_generator.cc" && \
@@ -76,6 +80,13 @@ build/classbench/trace_generator: $(TRACE_OBJECTS) Makefile | check-submodules
 	@mkdir -p "$(@D)"
 	$(CXX) $(CXXFLAGS) $(COMPILE_FLAGS) $(LDFLAGS) $(TRACE_OBJECTS) $(LDLIBS) -o "$@"
 
+build/network/testMultiProbeGrid: $(NETWORK)/TEST/testMultiProbeGrid.cpp \
+    $(NETWORK)/lib/multiProbeGrid.cpp $(NETWORK)/lib/multiProbeGrid.hpp Makefile | check-submodules
+	@mkdir -p "$(@D)"
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(COMPILE_FLAGS) -I"$(NETWORK)/lib" $(LDFLAGS) \
+	    "$(NETWORK)/TEST/testMultiProbeGrid.cpp" "$(NETWORK)/lib/multiProbeGrid.cpp" \
+	    $(LDLIBS) -o "$@"
+
 build/network/m: $(NETWORK_OBJECTS) Makefile | check-submodules check-openmp
 	@mkdir -p "$(@D)"
 	$(CXX) $(CXXFLAGS) $(COMPILE_FLAGS) $(LDFLAGS) $(NETWORK_OBJECTS) $(OPENMP_LIBS) $(LDLIBS) -o "$@"
@@ -94,6 +105,7 @@ help:
 	    'make [-j4]      Build both projects with -std=c++26 for arm64' \
 	    'make classbench Build db_generator and trace_generator' \
 	    'make network    Build the network analysis executable m' \
+	    'make test       Build and run the MultiProbeGrid stress test' \
 	    'make clean      Delete build/ (binaries, objects, dependency files)' \
 	    'make clean-data Delete data/ and logs/; keep build/' \
 	    'make clean-all  Delete build/, data/, and logs/' \

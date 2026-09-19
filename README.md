@@ -6,6 +6,27 @@ Becasue keeping 2 modfied folders inside this repo is stupid.
 I should make the 2 folder as it is, and I'll track only the patch.
 Or maybe using submodules?
 
+## Classification method: multi-probe spatial-hash grid
+
+The classification engine in `network-packet-classification/lib/multiProbeGrid.*`
+adapts the grid algorithm from
+[MultiProbeANN](https://github.com/weiz345/MultiProbeANN) to 5-tuple packet
+classification. The dense N-D grid becomes a sparse spatial hash, rules are
+indexed as hyperrectangles rather than points, and each rule picks its own
+per-axis shift so wildcards do not blow up replication. Classification is exact
+— it returns the same rule as a linear scan.
+
+See [docs/multiProbeGrid.md](network-packet-classification/docs/multiProbeGrid.md)
+for the design, tuning knobs, and measured results. On the bundled ClassBench
+sets it builds a 100k-rule index in ~14 ms at ~1.0x replication and classifies
+at 14.6 Mpps on `acl1_100k` and 4.0 Mpps on `fw1_100k`, single threaded.
+
+`main.cpp` exercises it under `#define ANN_GRID`. Run the correctness suite with:
+
+```sh
+make -C build_on_mac test
+```
+
 ## Build and run on an Apple Silicon Mac
 
 - ClassBench: [compile](build_on_mac/compile_classbench-packet-classification.md) and [run](build_on_mac/run_classbench-packet-classification.md).
