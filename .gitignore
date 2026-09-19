@@ -67,3 +67,13 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+# macOS metadata and debug bundles
+.DS_Store
+*.dSYM/
+
+# Local data and reports from the build_on_mac guides.
+# Binaries in build_on_mac/build/ are covered by build/ above.
+/build_on_mac/data/
+/build_on_mac/INFO/
+/build_on_mac/logs/
